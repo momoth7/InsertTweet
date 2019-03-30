@@ -1,0 +1,2 @@
+# InsertTweet
+TwitterAPIを利用してツイートを取得し、DynamoDBに格納する
