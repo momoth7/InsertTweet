@@ -3,7 +3,6 @@ package main
 import "./dynamoMethods"
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/url"
@@ -28,10 +27,18 @@ type Response struct {
 	Message string `json:"message"`
 }
 
+// Request リクエストパラメータの型
+type Request struct {
+	AnimalName string `json:"animal_name"`
+}
+
 // メイン処理メソッド
-func insertTweetData(ctx context.Context, params map[string]string) ([]Response, error) {
-	// パラメータから検索語を取得
-	animalName := params["word"]
+func insertTweetData(req Request) ([]Response, error) {
+
+	// バリデーション
+	if req.AnimalName == "" {
+		return []Response{Response{Code: 400, Message: "リクエストパラメータが不正です"}}, nil
+	}
 
 	// TwitterAPI用の設定を行う
 	api := getTwitterAPI()
@@ -41,14 +48,14 @@ func insertTweetData(ctx context.Context, params map[string]string) ([]Response,
 	v.Set("count", "100")
 
 	// 実取得部分
-	searchResponse, _ := api.GetSearch(animalName+" filter:native_video -filter:retweets -vine -periscope", v)
+	searchResponse, _ := api.GetSearch(req.AnimalName+" filter:native_video -filter:retweets -vine -periscope", v)
 	var tweets []anaconda.Tweet
 	tweets = searchResponse.Statuses
 
 	fmt.Println("Dynamo書き込み開始")
 	// DynamoDBに書き込む
 	for _, tweet := range tweets {
-		dynamoMethods.WriteDB(animalName, tweet)
+		dynamoMethods.WriteDB(req.AnimalName, tweet)
 	}
 	fmt.Println("Dynamo書き込み終了")
 
