@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ChimeraCoder/anaconda"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
@@ -16,9 +15,6 @@ func main() {
 	log.Println("insert started")
 	lambda.Start(lambdaMain)
 }
-
-// IncrementID 自動採番用IDの型
-type IncrementID int
 
 // Response レスポンス
 type Response struct {
@@ -40,8 +36,7 @@ func lambdaMain(req Request) ([]Response, error) {
 	}
 
 	// ツイート情報取得
-	var tweets []anaconda.Tweet
-	tweets = anacondaMethods.GetTweets(req.AnimalName)
+	tweets := anacondaMethods.GetTweets(req.AnimalName)
 
 	// Dynamoにinsert
 	fmt.Println("Dynamo書き込み開始")
