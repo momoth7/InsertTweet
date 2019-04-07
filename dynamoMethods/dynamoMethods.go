@@ -52,7 +52,7 @@ func getIncrementID() IncrementID {
 	table := db.Table("sequences")
 
 	var idData IDData
-	table.Get("name", "twimalData").One(&idData)
+	table.Get("name", "twimalTweetData").One(&idData)
 
 	return idData.CurrentNumber
 }
@@ -62,7 +62,7 @@ func putData(animalName string, tweet anaconda.Tweet, id IncrementID) {
 	db := dynamo.New(session.New(), &aws.Config{
 		Region: aws.String("us-east-1"),
 	})
-	table := db.Table("twimalData")
+	table := db.Table("twimalTweetData")
 
 	byteTweet, _ := json.Marshal(tweet)
 	var buf bytes.Buffer
@@ -80,6 +80,6 @@ func updateIncrement(id IncrementID) {
 	table := db.Table("sequences")
 
 	// current_numberを+1する
-	putData := IDData{Name: "twimalData", CurrentNumber: id + 1}
+	putData := IDData{Name: "twimalTweetData", CurrentNumber: id + 1}
 	table.Put(putData).Run()
 }
